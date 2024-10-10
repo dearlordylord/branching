@@ -1,4 +1,4 @@
-# Mindfulness in Typescript code branching. Exhaustiveness, pattern matching, and side effects. 1/2: "Absurdity applied"
+# Mindfulness in Typescript code branching. Exhaustiveness, pattern matching, and side effects. 1/2: "Exhaustive absurd"
 
 > This is the first post in a couple of posts about code branching in TypeScript. 
 > The first post serves as an introduction to the topic and supposed to be entry-level. It shows useful techniques of how to improve branching safety with explicit exhaustiveness checks.
@@ -27,6 +27,8 @@ switch (x) {
     console.log('Not five or six');
 }
 ```
+
+![five, six and not](./five-six-and-not.png)
 
 Then we learn about OO and inheritance, and that it also can provide kind of branching:
 
@@ -65,7 +67,9 @@ handleSound(cat);
 
 ```
 
-> We can also invert the control of the above using visitor pattern (https://en.wikipedia.org/wiki/Visitor_pattern) which I'm conveniently omitting from the post. 
+![Catdog](./catdog.png)
+
+> We can also invert the control of the above using visitor pattern (https://en.wikipedia.org/wiki/Visitor_pattern) which I'm to detail in the next post. 
 
 The most inquisitive of us probably wondered how we can do more complex branching and encountered pattern matching in such languages as Haskell, Scala, OCaml and Rust:
 
@@ -79,6 +83,8 @@ def listMatch(lst: List[Int]): String = lst match {
 ```
 
 But is there a deeper meaning to those methods? And are there intricacies to them that we should be aware about?
+
+![arrows](./techtalk/ifelse-vs-arrow.png)
 
 Here, I'll hopefully present a way of deeper thinking about code branching. I'll show how to improve type safety and composability of branching in TypeScript.
 
@@ -101,6 +107,8 @@ type Notification =
 ```
 
 You can handle it with a naive switch/case:
+
+> I'm going to use "break" or "return" for switches everywhere in this post; we won't go into fallthrough logic.
 
 ```ts
 function handleNotification(notification: Notification) {
@@ -132,7 +140,7 @@ You also can rewrite the code above to if/else. That won't change much, it's jus
 > if/else is much more powerful since you can give it any expression resulting in a boolean, e.g. `if (x > 5)`, whereas switch/case would only accept exact matches.
 
 ![if/else and switch? Same Picture!](https://www.loskutoff.com/static/blog/never-have-i-ever-1/same-picture.jpeg)
-> Picture source: https://dev.to/sumusiriwardana/if-else-or-switch-case-which-one-to-pick-4p3h
+<p><i>Picture <a href="https://dev.to/sumusiriwardana/if-else-or-switch-case-which-one-to-pick-4p3h">source</a></i></p>
 
 ```ts
 function handleNotification(notification: Notification) {
@@ -156,9 +164,11 @@ A difference with switch/case is that it's much more boilerplate, but if/else is
 
 Now, time for the bad news. We want to add a new case like `{ type: 'discord'; channel: string; message: string }`. We add it to the union type definition but forget to add to `handleNotification` function.
 
-`handleNotification` works for a week until we notice users don't get notified. They lost their money, business went down, marriage broke up. All of it because we forgot to handle `type === 'discord'`. 
+`handleNotification` works for a week until we notice users don't get notified. They lost their money, business went down, marriage broke up. All of it because we forgot to handle `type === 'discord'`.
 
-This is a classic problem. Fortunately, there's a solution already.
+![arrowhead miss](./techtalk/arrowhead-miss.png)
+
+This is a recurring problem. Fortunately, there's a solution already.
 
 ```ts
 function absurd(x: never): never {
@@ -218,7 +228,8 @@ function handleNotification(notification: Notification) {
 
 ### A peculiar case of "never"
 
-> Quoth the Raven “Nevermore.”
+![nevermore](nevermore.png)
+<p><i>Artist: <a href="https://www.instagram.com/serytama.art/p/C59EwKrOQBR/">Serytama.art</a></i></p>
 
 `never` is a very [special type](https://www.typescriptlang.org/docs/handbook/basic-types.html#never) in TypeScript. 
 
@@ -284,11 +295,12 @@ You can take it or leave it, because there's a plenty of other ways to achieve t
 
 ## Never have I ever...
 
-In this short post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in TypeScript.
+In this post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in TypeScript.
 
-These tools alone, used wisely, will radically improve your type safety and save you from many runtime bugs.
+These tools alone, used properly, will radically improve your type safety and save you from many runtime bugs.
 
 In the next post, I'll talk about more advanced notions, such as pattern matching with ts-pattern and in other languages, expressions and side effects, IIFE, discriminated unions and algebraic data types (spoiler: we used the latter two in the examples above), and what they do in OOP to achieve the same goal (spoiler: Visitor pattern).
 
 I'll also present a case that in most situations, we don't need the `absurd`-like function call at all, even if you don't explicitly declare return type.
+
 

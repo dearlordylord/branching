@@ -8,11 +8,10 @@ const run = (op: Op) => (a: number, b: number)/*: number*/ => {
       return a + b;
     case 'multiply':
       return a * b;
-    // I'd usually do this, but is it really necessary?
     // default: {
     //   // helper function for this is commonly called "absurd"
     //   const _: never = op;
-    // also, defensively, because Javascript:
+      // also, defensively, because Javascript:
     //   throw new Error(`panic! "${op}" is not a valid operation`);
     // }
   }
@@ -35,7 +34,7 @@ const run2 = (op: Op) => (a: number, b: number): void => {
       console.log(a + b);
       // writeToDb(a + b);
       break;
-    // here, without it, exhaustiveness goes to trash
+    // here, without it, exhaustiveness is lost
     // default:
     //   const _: never = op;
   }
@@ -47,7 +46,7 @@ const run3 = (op: Op) => (a: number, b: number) => {
     case 'add':
       return { action: 'log', value: a + b };
     case 'multiply':
-      return { action: 'log', value: a + b };
+      return { action: 'log', value: a * b };
     // we're safe again
     // default:
     //   const _: never = op;
@@ -88,14 +87,15 @@ const action2 = run4('add')(1, 1);
 // @ts-expect-error
 action2();
 
-// matching - next slide
+// matching - NEXT SLIDE
 
 // OOP style:
-class Animal {
+interface Animal {
+  makeSound(): string;
+}
+
+class Animal implements Animal {
   constructor(public name: string) {}
-  makeSound(): string {
-    return `${this.name} makes a sound.`;
-  }
 }
 
 class Dog extends Animal {
@@ -137,6 +137,7 @@ const handlers = {
 }
 
 const notification: Notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'};
+// const notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'} as const;
 handlers[notification.type](notification);
 
 // ts figures out the narrowed type of notification:
@@ -147,13 +148,22 @@ handlers['sms'](notification);
 
 const switchNotification = (notification: Notification) => {
   switch (notification.type) {
+
+    // notification.type = 'email' | 'sms' | never;
+
     case 'email':
       // NB! better to return a command here, it's much more composable
       sendEmail(notification.recipient, notification.subject, notification.body);
       break;
+
+    // notification.type = 'sms' | never;
+
     case 'sms':
       sendSMS(notification.phoneNumber, notification.message);
       break;
+
+    // notification.type = never;
+
     default:
       const _: never = notification;
       throw new Error(`panic! Unknown notification type: ${(notification as any).type}`);
@@ -161,4 +171,8 @@ const switchNotification = (notification: Notification) => {
 }
 
 // Notification is a union discriminated by the "type" field!
+
+// discriminated union
+
+// more fields? complex logic? next slide
 

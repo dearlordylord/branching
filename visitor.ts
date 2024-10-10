@@ -107,7 +107,7 @@ const makeSound = (animal: Animal2): string => {
   } else if (animal instanceof Cat2) {
     return animal.meow();
   }
-  // can't make it exhaustive, but shouldn't we be able to, really? it's our code, we know all the animals
+  // can't make it exhaustive, and shouldn't we be able to, really? it's our code, we know all the animals
   throw new Error('animal is not a dog or cat');
 };
 
