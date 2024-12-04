@@ -185,6 +185,9 @@ function reducer(state: State, action: Action): State {
 }
 ```
 
+--- frontier here: "remember absurd? you don't really need it here, as long as you have a return type. The error will be caught sooner or later, still in compile time".
+--- next: give "expression" way of running side effects: commands or IO monad; turn back to the "mapping" diagram, where "B" is just a function
+
 adding a `RESET` action type without catering to it in reducer would not compile. At the end of switch/case, there's still a possible `action.type` `RESET` that makes the function to be able to return `undefined`, which contradicts its return type (State).
 
 TODO "now you couldve had absurd" => what if we remove state return type?

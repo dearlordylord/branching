@@ -11,7 +11,7 @@ const run = (op: Op) => (a: number, b: number)/*: number*/ => {
     // default: {
     //   // helper function for this is commonly called "absurd"
     //   const _: never = op;
-      // also, defensively, because Javascript:
+    //   // also, defensively, because Javascript:
     //   throw new Error(`panic! "${op}" is not a valid operation`);
     // }
   }
@@ -19,6 +19,7 @@ const run = (op: Op) => (a: number, b: number)/*: number*/ => {
 
 const n = run('add')(1, 1);
 
+// if types are solid enough down the line, the error is actually caught
 const use = (n: number): void => {};
 
 // @ts-expect-error
@@ -40,7 +41,7 @@ const run2 = (op: Op) => (a: number, b: number): void => {
   }
 };
 
-// we actually rarely want a side effect
+// we rarely truly want a side effect - we're just a bit lazy and run side effects right away
 const run3 = (op: Op) => (a: number, b: number) => {
   switch (op) {
     case 'add':
@@ -53,6 +54,8 @@ const run3 = (op: Op) => (a: number, b: number) => {
   }
 };
 
+const action = run3('add')(1, 1);
+
 const runAction = (action: {action: 'log'; value: number}) => {
   /*well, we'll want exhaustiveness here or eventually somewhere down the line!*/
   switch (action.action) {
@@ -64,13 +67,11 @@ const runAction = (action: {action: 'log'; value: number}) => {
   }
 };
 
-const action = run3('add')(1, 1);
-
-// again, we're safe - action being "undefined" is caught here
+// action being "undefined" is caught here, but we'll now want exhaustiveness in runAction
 // @ts-expect-error
 runAction(action);
 
-// but if we want side effects very very much
+// but if we want side effects very very much, we can return an effect
 const run4 = (op: Op) => (a: number, b: number) => {
   switch (op) {
     case 'add':
@@ -87,6 +88,9 @@ const action2 = run4('add')(1, 1);
 // @ts-expect-error
 action2();
 
+// the flow becomes: (Op + args) => (Action) => (Effect) => void
+// or just define goddamn return types / use absurds
+
 // matching - NEXT SLIDE
 
 // OOP style:
@@ -96,6 +100,9 @@ interface Animal {
 
 class Animal implements Animal {
   constructor(public name: string) {}
+  makeSound(): string {
+    return `${this.name} makes a sound.`;
+  }
 }
 
 class Dog extends Animal {
@@ -134,7 +141,7 @@ declare function sendSMS(phoneNumber: string, message: string): void;
 const handlers = {
   email: (notification: Notification & {type: 'email'}) => sendEmail(notification.recipient, notification.subject, notification.body),
   sms: (notification: Notification & {type: 'sms'}) => sendSMS(notification.phoneNumber, notification.message),
-}
+};
 
 const notification: Notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'};
 // const notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'} as const;
@@ -152,7 +159,6 @@ const switchNotification = (notification: Notification) => {
     // notification.type = 'email' | 'sms' | never;
 
     case 'email':
-      // NB! better to return a command here, it's much more composable
       sendEmail(notification.recipient, notification.subject, notification.body);
       break;
 
@@ -175,4 +181,3 @@ const switchNotification = (notification: Notification) => {
 // discriminated union
 
 // more fields? complex logic? next slide
-

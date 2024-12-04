@@ -39,7 +39,7 @@ class Cat implements Animal {
   // }
 }
 
-// easier to add an entity, more difficuly to add a behaviour ^
+// easier to add an entity, more difficult to add a behaviour ^
 
 // visitor pattern
 // https://refactoring.guru/design-patterns/visitor/typescript/example
