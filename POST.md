@@ -13,7 +13,7 @@ if (x > 5) {
 }
 ```
 
-We proceeded with learning switch/case, and usually end here. We're ready to hack The Next Facebook ™. Nobody can stop us now, not even our PM. Or even SIGTERM. Ok, the last one was a bit dark.
+We proceeded with learning switch/case, and usually end here. We're ready to hack The Next Facebook. Nobody can stop us now, not even our teamlead. Or even SIGTERM. Ok, the last one was a bit dark.
 
 ```ts
 switch (x) {
@@ -82,7 +82,7 @@ def listMatch(lst: List[Int]): String = lst match {
 }
 ```
 
-But is there a deeper meaning to those methods? And are there intricacies to them that we should be aware about?
+But is there a deeper meaning to this syntax? And are there intricacies it may have that we should be aware of?
 
 ![arrows](./techtalk/ifelse-vs-arrow.png)
 
@@ -90,13 +90,16 @@ Here, I'll hopefully present a way of deeper thinking about code branching. I'll
 
 ## Why branch?
 
-We need if/else or equivalents to do anything useful. 
-Without it, your program will be quite static! 
-Not much decision making will be possible. 
-Probably, you'll map/reduce some data into some other data and that's it.
-Not that mapping data wasn't a big feat. It's just not always enough by itself.
+We need if/else or equivalents to do anything useful in classic programming. 
+Without it, programs will be static and won't do much. 
+Making programmatic decisions will be very hard.
+Probably, you'll map/reduce some data into some other data and that'll be it.
 
-Assume that you want to send a notification to a user. A user may use different channels to receive notifications, and you want to dispatch properly: emails to email APIs such as Sendgrid, Slack to Slack APIs etc. 
+Assume that you want to send a notification to a user. 
+A user may use different channels to receive notifications, and you want to dispatch properly: 
+
+- emails to an email APIs such as Sendgrid
+- Slack to Slack APIs etc. 
 
 ```ts
 type Notification =
@@ -130,9 +133,7 @@ function handleNotification(notification: Notification) {
 ```
 
 > This code has some potential issues I'll talk about later. The main point here is that it shows why we want to branch our code at all.
- 
-By this point, I think it's clear enough that we can't do much without branching: notification dispatching, data mapping, fibonacci sequence, FizzBuzz, interview questions: all of those definitely important tasks require some form or if/else.
- 
+  
 ### Playing around with if/else
 
 You also can rewrite the code above to if/else. That won't change much, it's just a bit more boilerplate in this case. 
@@ -164,7 +165,7 @@ A difference with switch/case is that it's much more boilerplate, but if/else is
 
 Now, time for the bad news. We want to add a new case like `{ type: 'discord'; channel: string; message: string }`. We add it to the union type definition but forget to add to `handleNotification` function.
 
-`handleNotification` works for a week until we notice users don't get notified. They lost their money, business went down, marriage broke up. All of it because we forgot to handle `type === 'discord'`.
+`handleNotification` works for a week until we notice users don't get notified. They lost their money, business went down, marriages broke up. All of it because we forgot to handle `type === 'discord'`.
 
 ![arrowhead miss](./techtalk/arrowhead-miss.png)
 
@@ -297,9 +298,11 @@ You can take it or leave it, because there's a plenty of other ways to achieve t
 
 In this post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in TypeScript.
 
-These tools alone, used properly, will radically improve your type safety and save you from many runtime bugs.
+These tools alone, used properly, will drastically improve your type safety and save you from many runtime bugs.
 
-In the next post, I'll talk about more advanced notions, such as pattern matching with ts-pattern and in other languages, expressions and side effects, IIFE, discriminated unions and algebraic data types (spoiler: we used the latter two in the examples above), and what they do in OOP to achieve the same goal (spoiler: Visitor pattern).
+I haven't talked about return types yet: it comes in the next post.
+
+There, I'll also talk about more advanced notions, such as pattern matching with ts-pattern, expressions and side effects, IIFE, discriminated unions and algebraic data types (spoiler: we used the latter two in the examples above), and what they do in OOP to achieve the same goal (spoiler: Visitor pattern).
 
 I'll also present a case that in most situations, we don't need the `absurd`-like function call at all, even if you don't explicitly declare return type.
 
