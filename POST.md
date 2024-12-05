@@ -1,6 +1,6 @@
 # Mindfulness in Typescript code branching. Exhaustiveness, pattern matching, and side effects. 1/2: "Exhaustive absurd"
 
-> This is the first post in a couple of posts about code branching in TypeScript. 
+> This is the first post in a couple of posts about code branching in Typescript. 
 > The first post serves as an introduction to the topic and supposed to be entry-level. It shows useful techniques of how to improve branching safety with explicit exhaustiveness checks.
 
 Most of us developers have written their first **if/else** statement when we were just newborns (that is, 0-years-experienced newborns in the industry).
@@ -86,7 +86,7 @@ But is there a deeper meaning to this syntax? And are there intricacies it may h
 
 ![arrows](./techtalk/ifelse-vs-arrow.png)
 
-Here, I'll hopefully present a way of deeper thinking about code branching. I'll show how to improve type safety and composability of branching in TypeScript.
+Here, I'll hopefully present a way of deeper thinking about code branching. I'll show how to improve type safety and composability of branching in Typescript.
 
 ## Why branch?
 
@@ -132,6 +132,8 @@ function handleNotification(notification: Notification) {
 }
 ```
 
+> The kind of type we match against (`Notification`) is called [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions).  
+
 > This code has some potential issues I'll talk about later. The main point here is that it shows why we want to branch our code at all.
   
 ### Playing around with if/else
@@ -157,7 +159,7 @@ function handleNotification(notification: Notification) {
 }
 ```
 
-In both cases, TypeScript figures out the shape of the notification object after the "type" field check. You also won't be able to write something like `notification.type === 'GIBBERISH'` or `case('yes?')`; it'll stop you.
+In both cases, Typescript figures out the shape of the notification object after the "type" field check. You also won't be able to write something like `notification.type === 'GIBBERISH'` or `case('yes?')`; it'll stop you.
 
 A difference with switch/case is that it's much more boilerplate, but if/else is more applicable to more general cases.
 
@@ -185,7 +187,9 @@ function handleNotification(notification: Notification) {
 }
 ```
 
-How it works? Each `case` (or `if/else`) TypeScript narrows down the possible type of `notification.type`:
+> This function is also called `assertNever` in [TS documentation](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#union-exhaustiveness-checking). I'll stick to `absurd` because it's more fun.
+
+How it works? Each `case` (or `if/else`) Typescript narrows down the possible type of `notification.type`:
 
 ```ts
 // here, notification.type is full 'email' | 'sms' | 'push' | 'slack' | 'discord'
@@ -232,7 +236,7 @@ function handleNotification(notification: Notification) {
 ![nevermore](nevermore.png)
 <p><i>Artist: <a href="https://www.instagram.com/serytama.art/p/C59EwKrOQBR/">Serytama.art</a></i></p>
 
-`never` is a very [special type](https://www.typescriptlang.org/docs/handbook/basic-types.html#never) in TypeScript. 
+`never` is a very [special type](https://www.typescriptlang.org/docs/handbook/basic-types.html#never) in Typescript. 
 
 It's assignable to anything, which isn't very useful in our case, but is useful in more advanced cases. 
 
@@ -264,7 +268,7 @@ const code: number =
   absurd(notification.type/*never*/);
 ````
 
-Importantly, when `never`-typed values in code, you can always assume this part of the code is unreachable, that is, if your typing has no bugs. In TypeScript, it may happen e.g. because of casting with `as`. That's why I accompany the `never` check in `absurd` with a `throw`. Better safe than sorry.
+Importantly, when `never`-typed values in code, you can always assume this part of the code is unreachable, that is, if your typing has no bugs. In Typescript, it may happen e.g. because of casting with `as`. That's why I accompany the `never` check in `absurd` with a `throw`. Better safe than sorry.
 
 ### Object key mapping
 
@@ -296,13 +300,13 @@ You can take it or leave it, because there's a plenty of other ways to achieve t
 
 ## Never have I ever...
 
-In this post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in TypeScript.
+In this post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in Typescript.
 
 These tools alone, used properly, will drastically improve your type safety and save you from many runtime bugs.
 
 I haven't talked about return types yet: it comes in the next post.
 
-There, I'll also talk about more advanced notions, such as pattern matching with ts-pattern, expressions and side effects, IIFE, discriminated unions and algebraic data types (spoiler: we used the latter two in the examples above), and what they do in OOP to achieve the same goal (spoiler: Visitor pattern).
+There, I'll also talk about more advanced notions, such as pattern matching with ts-pattern and in other languages, expressions and side effects, IIFE, discriminated unions and algebraic data types (spoiler: we used the latter two in the examples above), and what they do in OOP to achieve the same goal (spoiler: Visitor pattern).
 
 I'll also present a case that in most situations, we don't need the `absurd`-like function call at all, even if you don't explicitly declare return type.
 
