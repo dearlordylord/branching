@@ -41,13 +41,16 @@ const run2 = (op: Op) => (a: number, b: number): void => {
   }
 };
 
+type LogAction = { action: 'log'; value: string };
+const LogAction = (a: string): LogAction => ({ action: 'log', value: a });
+
 // we rarely truly want a side effect - we're just a bit lazy and run side effects right away
 const run3 = (op: Op) => (a: number, b: number) => {
   switch (op) {
     case 'add':
-      return { action: 'log', value: a + b };
+      return LogAction(`${a} + ${b} = ${a + b}`);
     case 'multiply':
-      return { action: 'log', value: a * b };
+      return LogAction(`${a} * ${b} = ${a * b}`);
     // we're safe again
     // default:
     //   const _: never = op;
@@ -56,7 +59,7 @@ const run3 = (op: Op) => (a: number, b: number) => {
 
 const action = run3('add')(1, 1);
 
-const runAction = (action: {action: 'log'; value: number}) => {
+const runAction = (action: LogAction) => {
   /*well, we'll want exhaustiveness here or eventually somewhere down the line!*/
   switch (action.action) {
     case 'log':
@@ -71,7 +74,9 @@ const runAction = (action: {action: 'log'; value: number}) => {
 // @ts-expect-error
 runAction(action);
 
-// but if we want side effects very very much, we can return an effect
+// run3('add')(1, 1) is possible, no one stops us (except certain eslint rules)
+
+// but if we want side effects very much and want to avoid command pattern, we can return an effect
 const run4 = (op: Op) => (a: number, b: number) => {
   switch (op) {
     case 'add':
@@ -90,6 +95,23 @@ action2();
 
 // the flow becomes: (Op + args) => (Action) => (Effect) => void
 // or just define goddamn return types / use absurds
+
+// bonus - partial exhaustiveness
+
+type OpPartial = 'add' | 'multiply' | 'divide' | (string & {});
+
+const run5 = (op: OpPartial) => (a: number, b: number) => {
+  switch (op) {
+    case 'add':
+      return LogAction(`${a} + ${b} = ${a + b}`);
+    case 'multiply':
+      return LogAction(`${a} * ${b} = ${a * b}`);
+    case 'divide':
+      return LogAction(`${a} / ${b} = ${a / b}`);
+    default:
+      return LogAction('default');
+  }
+};
 
 // matching - NEXT SLIDE
 
