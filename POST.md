@@ -298,6 +298,12 @@ I currently see certain disdain for this technique in the community lately. The 
 Although I'm sure this wariness has some grounding, I personally don't care about these accusations and use the technique whenever I see fit.
 You can take it or leave it, because there's a plenty of other ways to achieve the same goal.
 
+### Eslint rule
+
+Honorary mention to [switch-exhaustiveness-check](https://typescript-eslint.io/rules/switch-exhaustiveness-check/), whilst it's not a "typescript"-native solution, is still good enough to preserve exhaustiveness for switch/case. 
+
+It's a ESlint rule that enforces exhaustiveness of enums and union types.
+
 ## Never have I ever...
 
 In this post, I've introduced the concept of exhaustiveness checking and explored some of the ways to branch in Typescript.

@@ -32,8 +32,8 @@ const run2 = (op: Op) => (a: number, b: number): void => {
       // writeToDb(a + b);
       break;
     case 'multiply':
-      console.log(a + b);
-      // writeToDb(a + b);
+      console.log(a * b);
+      // writeToDb(a * b);
       break;
     // here, without it, exhaustiveness is lost
     // default:
@@ -93,7 +93,7 @@ const action2 = run4('add')(1, 1);
 // @ts-expect-error
 action2();
 
-// the flow becomes: (Op + args) => (Action) => (Effect) => void
+// the flow becomes: (Op + args)  => (Effect) => void
 // or just define goddamn return types / use absurds
 
 // bonus - partial exhaustiveness
@@ -166,7 +166,10 @@ const handlers = {
 };
 
 const notification: Notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'};
+
+// or define like this:
 // const notification = {type: 'email', recipient: 'igor@loskutoff.com', subject: 'hello', body: 'world'} as const;
+
 handlers[notification.type](notification);
 
 // ts figures out the narrowed type of notification:
@@ -199,7 +202,5 @@ const switchNotification = (notification: Notification) => {
 }
 
 // Notification is a union discriminated by the "type" field!
-
-// discriminated union
 
 // more fields? complex logic? next slide
